@@ -9,7 +9,7 @@ typedef struct s_zone
     char	backgrond;
 }	t_zone;
 
-typedef struct s_list
+typedef struct s_rect
 {
 	char	type;
 	float	x;
@@ -17,7 +17,7 @@ typedef struct s_list
 	float	width;
 	float	height;
 	char	color;
-}	t_list;
+}	t_rect;
 
 int ft_strlen(char *s)
 {
@@ -62,7 +62,6 @@ char *get_zone(FILE *file, t_zone *zone)
     if (count == (-1))
         return (0);
 	if (zone->width < 0 || zone->width > 300 || zone->height < 0 || zone->height > 300)
-    //if (!(check_zone(zone)))
         return (0);
     draw = (char *)malloc(sizeof(char) * (zone->width * zone->height));
     while (i < zone->width * zone->height)
@@ -73,22 +72,17 @@ char *get_zone(FILE *file, t_zone *zone)
     return (draw);
 }
 
-int check_tmp(t_list *tmp)
-{
-    return ((tmp->height > 0.00000000 && tmp->width > 0.00000000) && (tmp->type == 'r' || tmp->type == 'R'));
-}
-
-int is_rec(float y, float x, t_list *tmp)
+int is_rec(float y, float x, t_rect *rect)
 {
     float check = 1.00000000;
-    if ((x < tmp->x) || (tmp->x + tmp->width < x) || (y < tmp->y) || (tmp->y + tmp->height < y))
+    if ((x < rect->x) || (rect->x + rect->width < x) || (y < rect->y) || (rect->y + rect->height < y))
         return (0);
-    if (((x - tmp->x) < check) || ((tmp->x + tmp->width) - x < check) || ((y - tmp->y) < check) || ((tmp->y + tmp->height) - y < check))
+    if (((x - rect->x) < check) || ((rect->x + rect->width) - x < check) || ((y - rect->y) < check) || ((rect->y + rect->height) - y < check))
         return (2);
     return (1);
 }
 
-void get_draw(char **draw, t_list *tmp, t_zone *zone)
+void get_draw(char **draw, t_rect *rect, t_zone *zone)
 {
     int x, y;
     int rec;
@@ -99,9 +93,9 @@ void get_draw(char **draw, t_list *tmp, t_zone *zone)
         x = 0;
         while (x < zone->width)
         {
-            rec = is_rec(y, x, tmp);
-            if ((tmp->type == 'r' && rec == 2) || (tmp->type == 'R' && rec))
-                (*draw)[(y * zone->width) + x] = tmp->color;
+            rec = is_rec(y, x, rect);
+            if ((rect->type == 'r' && rec == 2) || (rect->type == 'R' && rec))
+                (*draw)[(y * zone->width) + x] = rect->color;
             x++;
         }
         y++;
@@ -110,14 +104,14 @@ void get_draw(char **draw, t_list *tmp, t_zone *zone)
 
 int drawing(FILE *file, char **draw, t_zone *zone)
 {
-    t_list tmp;
-    int count;
+    t_rect	rect;
+    int		count;
 
-    while ((count = fscanf(file, "%c %f %f %f %f %c\n", &tmp.type, &tmp.x, &tmp.y, &tmp.width, &tmp.height, &tmp.color)) == 6)
+    while ((count = fscanf(file, "%c %f %f %f %f %c\n", &rect.type, &rect.x, &rect.y, &rect.width, &rect.height, &rect.color)) == 6)
     {
-        if (!(check_tmp(&tmp)))
+		if (!(rect.height > 0.00000000 && rect.width > 0.00000000) && (rect.type == 'r' || rect.type == 'R'))
             return (0);
-        get_draw(draw, &tmp, zone);
+        get_draw(draw, &rect, zone);
     }
     if (count != (-1))
         return (0);
@@ -136,15 +130,15 @@ void print_draw(char *draw, t_zone *zone)
     }
 }
 
-int main(int ac, char **av)
+int main(int argc, char *argv[])
 {
-    FILE *file;
-    char *draw;
-    t_zone zone;
+    FILE	*file;
+    char	*draw;
+    t_zone	zone;
 
-    if (ac != 2)
+    if (argc != 2)
         return (fail("Error: argument\n"));
-    if (!(file = fopen(av[1], "r")))
+    if (!(file = fopen(argv[1], "r")))
         return (fail("Error: Operation file corrupted\n"));
     if (!(draw = get_zone(file, &zone)))
         return (free_all(file, NULL) && fail("Error: Operation file corrupted\n"));
