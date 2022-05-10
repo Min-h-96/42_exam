@@ -45,11 +45,6 @@ int free_all(FILE *file, char *draw)
     return (1);
 }
 
-int check_zone(t_zone *zone)
-{
-    return ((zone->width >= 0 && zone->width <= 300) && (zone->height >= 0 && zone->height <= 300));
-}
-
 char *get_zone(FILE *file, t_zone *zone)
 {
 	char	*draw;
