@@ -57,7 +57,7 @@ char *get_zone(FILE *file, t_zone *zone)
     if (!(array = (char *)malloc(sizeof(char) * (zone->width * zone->height))))
         return (NULL);
     i = 0;
-    while (i < (zone->width * zone->height))
+    while (i < zone->width * zone->height)
     {
         array[i] = zone->background;
         i++;

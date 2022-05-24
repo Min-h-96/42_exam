@@ -70,14 +70,14 @@ char *get_zone(FILE *file, t_zone *zone)
 int is_rec(float y, float x, t_rect *rect)
 {
     float check = 1.00000000;
-    if ((x < rect->x) || (rect->x + rect->width < x) || (y < rect->y) || (rect->y + rect->height < y))
+    if (x < rect->x || rect->x + rect->width < x || y < rect->y || rect->y + rect->height < y)
         return (0);
-    if (((x - rect->x) < check) || ((rect->x + rect->width) - x < check) || ((y - rect->y) < check) || ((rect->y + rect->height) - y < check))
+    if (x - rect->x < check || rect->x + rect->width - x < check || y - rect->y < check || rect->y + rect->height - y < check)
         return (2);
     return (1);
 }
 
-void get_draw(char **draw, t_rect *rect, t_zone *zone)
+void get_draw(char *draw, t_rect *rect, t_zone *zone)
 {
     int x, y;
     int rec;
@@ -90,14 +90,14 @@ void get_draw(char **draw, t_rect *rect, t_zone *zone)
         {
             rec = is_rec(y, x, rect);
             if ((rect->type == 'r' && rec == 2) || (rect->type == 'R' && rec))
-                (*draw)[(y * zone->width) + x] = rect->color;
+                draw[(y * zone->width) + x] = rect->color;
             x++;
         }
         y++;
     }
 }
 
-int drawing(FILE *file, char **draw, t_zone *zone)
+int drawing(FILE *file, char *draw, t_zone *zone)
 {
     t_rect	rect;
     int		count;
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
         return (fail("Error: Operation file corrupted\n"));
     if (!(draw = get_zone(file, &zone)))
         return (free_all(file, NULL) && fail("Error: Operation file corrupted\n"));
-    if (!(drawing(file, &draw, &zone)))
+    if (!(drawing(file, draw, &zone)))
         return (free_all(file, draw) && fail("Error: Operation file corrupted\n"));
     print_draw(draw, &zone);
     free_all(file, draw);
