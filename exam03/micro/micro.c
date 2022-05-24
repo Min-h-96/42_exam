@@ -56,7 +56,7 @@ char *get_zone(FILE *file, t_zone *zone)
         return (0);
     if (count == (-1))
         return (0);
-	if (zone->width < 0 || zone->width > 300 || zone->height < 0 || zone->height > 300)
+	if (zone->width <= 0 || zone->width > 300 || zone->height <= 0 || zone->height > 300)
         return (0);
     draw = (char *)malloc(sizeof(char) * (zone->width * zone->height));
     while (i < zone->width * zone->height)
@@ -104,7 +104,7 @@ int drawing(FILE *file, char *draw, t_zone *zone)
 
     while ((count = fscanf(file, "%c %f %f %f %f %c\n", &rect.type, &rect.x, &rect.y, &rect.width, &rect.height, &rect.color)) == 6)
     {
-		if (!(rect.height > 0.00000000 && rect.width > 0.00000000) && (rect.type == 'r' || rect.type == 'R'))
+		if (!((rect.height > 0.00000000 && rect.width > 0.00000000) && (rect.type == 'r' || rect.type == 'R')))
             return (0);
         get_draw(draw, &rect, zone);
     }
